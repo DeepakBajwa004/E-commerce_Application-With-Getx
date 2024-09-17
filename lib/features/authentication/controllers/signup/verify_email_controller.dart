@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 import 'package:m_store/common/widgets/success_screen/success_screen.dart';
 import 'package:m_store/data/repositories/data.repositories/authentication_repository.dart';
+import 'package:m_store/navigation_menu.dart';
 import 'package:m_store/utils/constants/image_strings.dart';
 import 'package:m_store/utils/constants/text_strings.dart';
 import 'package:m_store/utils/popups/loaders.dart';
@@ -41,7 +42,7 @@ class VerifyEmailController extends GetxController  {
           image: MImages.staticSuccessIllustration,
           title: MTexts.yourAccountCreatedTitle,
           subtitle: MTexts.yourAccountCreatedSubTitle,
-            onPressed: () => AuthenticationRepository.instance.screenRedirect,
+            onPressed: () => Get.offAll(()=> NavigationMenu())
         ) );
       }
      });

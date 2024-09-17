@@ -5,6 +5,7 @@ import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:m_store/data/repositories/user/user_repositories.dart';
 import 'package:m_store/features/authentication/screens/login/login.dart';
 import 'package:m_store/features/authentication/screens/onboarding/onboarding.dart';
 import 'package:m_store/features/authentication/screens/signup/verifiy_email.dart';
@@ -23,6 +24,9 @@ class AuthenticationRepository extends GetxController{
 //Variable //
 final deviceStorage = GetStorage();
 final _auth = FirebaseAuth.instance;
+
+//Get Logged User Data
+  User? get authUser => _auth.currentUser;
 
 
 //Called form main.dart on app lunch //
@@ -120,6 +124,24 @@ screenRedirect ( )async   {
   }
  }
 
+ // Forget Password
+  Future<void> sendPasswordResetEmail (String email)async {
+    try {
+      await _auth.sendPasswordResetEmail(email: email);
+    } on FirebaseAuthException catch (e) {
+      throw MFirebaseAuthException(e.code).message;
+    } on FirebaseException catch (e) {
+      throw MFirebaseException(e.code).message;
+    } on FormatException catch(_) {
+      throw const MFormatException();
+    } on PlatformException catch(e) {
+      throw MPlatformException(e.code).message;
+    } catch(e){
+      throw 'Something went wrong. Please try again';
+    }
+  }
+
+
 
 // ======----<<<<Google - SignIn---->>>>======= //
  Future<UserCredential?> signInWithGoogle ()async {
@@ -155,9 +177,36 @@ screenRedirect ( )async   {
 
 
 
+//ReAuthenticateUser
+  Future<void> reAuthenticateEmailAndPasswordUser (String email , String password) async {
+    try {
+      //Create a Credential
+      AuthCredential credential = EmailAuthProvider.credential(email: email, password: password);
+
+      //ReAuthenticate
+      await _auth.currentUser!.reauthenticateWithCredential(credential);
+    } on FirebaseAuthException catch (e) {
+      throw MFirebaseAuthException(e.code).message;
+    } on FirebaseException catch (e) {
+      throw MFirebaseException(e.code).message;
+    } on FormatException catch(_) {
+      throw const MFormatException();
+    } on PlatformException catch(e) {
+      throw MPlatformException(e.code).message;
+    } catch(e){
+      throw 'Something went wrong. Please try again';
+    }
+  }
+
+
+
+
+
 // ======----<<<<Logout User---->>>>======= //
 Future<void> logoutUser () async {
   try {
+
+    await GoogleSignIn().signOut();
     await FirebaseAuth.instance.signOut();
     Get.offAll((()=> LoginScreen()));
   } on FirebaseAuthException catch (e) {
@@ -172,6 +221,28 @@ Future<void> logoutUser () async {
     throw 'Something went wrong. Please try again';
   }
 }
+
+
+// Delete User Account
+  Future<void> deleteAccout () async {
+    try {
+      await UserRepository.instance.removeUserRecord(_auth.currentUser!.uid);
+      await _auth.currentUser?.delete();
+      Get.offAll((()=> LoginScreen()));
+    } on FirebaseAuthException catch (e) {
+      throw MFirebaseAuthException(e.code).message;
+    } on FirebaseException catch (e) {
+      throw MFirebaseException(e.code).message;
+    } on FormatException catch(_) {
+      throw const MFormatException();
+    } on PlatformException catch(e) {
+      throw MPlatformException(e.code).message;
+    } catch(e){
+      throw 'Something went wrong. Please try again';
+    }
+  }
+
+
 
 
 

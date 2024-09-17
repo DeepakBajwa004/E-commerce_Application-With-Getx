@@ -25,9 +25,7 @@ class SocialButton extends StatelessWidget {
             border: Border.all(color: MColors.grey),
           ),
           child: IconButton(
-            onPressed: (){
-              controller.googleSignIn(),
-            },
+            onPressed: () => controller.googleSignIn(),
             icon: const Image(width: MSize.iconMd, image: AssetImage(MImages.google),),
           ),
         ),
@@ -38,7 +36,9 @@ class SocialButton extends StatelessWidget {
             border: Border.all(color: MColors.grey),
           ),
           child: IconButton(
-            onPressed: (){},
+            onPressed: (){
+              Get.offAll(NavigationMenu());
+            },
             icon: const Image(
               width: MSize.iconMd,
               image: AssetImage(MImages.facebook),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:m_store/data/repositories/data.repositories/authentication_repository.dart';
+import 'package:m_store/features/personalization/controllers/user_controller.dart';
 import 'package:m_store/utils/popups/loaders.dart';
 
 import '../../../../utils/helper/network_manager.dart';
@@ -18,6 +19,8 @@ class LoginController extends GetxController {
   final password = TextEditingController();       // Controller For Password Input
   GlobalKey<FormState> signInFormKey = GlobalKey<FormState>(); // Form Key For Form Validation
 
+  final userController = Get.put(UserController());
+
   @override
   void onInit() {
     super.onInit();
@@ -29,7 +32,7 @@ class LoginController extends GetxController {
   Future<void> signIn() async {
     try {
       // Start full-screen loader
-      MFullScreenLoader.openLoadingDialog('Logging you in...', 'assets/images/animations/141594-animation-of-docer.json');
+      MFullScreenLoader.openLoadingDialog('Logging you in...', 'assets/images/animations/loading.json');
 
       final isConnected = await NetworkManager.instance.isConnected();
       if (!isConnected) {
@@ -65,10 +68,10 @@ class LoginController extends GetxController {
   // ======----<<<<Google Sign-IN---->>>>======= //
   Future<void> googleSignIn() async{
      try{
-       MFullScreenLoader.openLoadingDialog('Logging in...', 'assets/images/animations/141594-animation-of-docer.json');
+       MFullScreenLoader.openLoadingDialog('Logging in...', 'assets/images/animations/loading.json');
 
        // Check Internet
-       final isConnected = await NetworkManager.instance.isConnected();
+       final bool isConnected = await NetworkManager.instance.isConnected();
        if (!isConnected) {
          MFullScreenLoader.stopLoading();
          //MLoaders.errorSnackBar(title: 'No Internet', message: 'Please check your internet connection.');
@@ -78,7 +81,18 @@ class LoginController extends GetxController {
        // Google Auth
        final userCredentials = await AuthenticationRepository.instance.signInWithGoogle();
 
+       // Save User Record
+       await userController.saveUserRecord(userCredentials);
+
+       //Remove Loader
+       MFullScreenLoader.stopLoading();
+
+       //Redirect User
+       AuthenticationRepository.instance.screenRedirect();
+
      } catch (e) {
+       //Remove Loader
+       MFullScreenLoader.stopLoading();
        MLoaders.errorSnackBar(title: 'Oh Snap' , message:  e.toString());
      }
   }

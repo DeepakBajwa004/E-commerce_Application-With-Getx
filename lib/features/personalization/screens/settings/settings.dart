@@ -4,6 +4,7 @@ import 'package:iconsax/iconsax.dart';
 import 'package:m_store/common/widgets/appbar/appbar.dart';
 import 'package:m_store/common/widgets/custom_shape/containers/primary_headers_container.dart';
 import 'package:m_store/common/widgets/texts/section_heading.dart';
+import 'package:m_store/data/repositories/data.repositories/authentication_repository.dart';
 import 'package:m_store/features/personalization/screens/address/address.dart';
 import 'package:m_store/features/shop/screens/cart/cart.dart';
 import 'package:m_store/utils/constants/sizes.dart';
@@ -135,7 +136,9 @@ class SettingsScreen extends StatelessWidget {
                 SizedBox(
                   width: double.infinity,
                   child: OutlinedButton(
-                    onPressed: (){},
+                    onPressed: (){
+                      AuthenticationRepository.instance.logoutUser();
+                    },
                     child:const Text('Logout'),
                   ),
                 ),

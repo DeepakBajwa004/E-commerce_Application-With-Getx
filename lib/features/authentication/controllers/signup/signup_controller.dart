@@ -67,7 +67,7 @@ signup () async {
 
         MFullScreenLoader.stopLoading();
 
-         MLoaders.successSnackBar(title: 'Congratulations',message: 'Your account has been created');
+         //MLoaders.successSnackBar(title: 'Congratulations',message: 'Your account has been created');
 
         Get.to(()=>  VerifyEmailScreen(email: email.text.trim(),));
 
